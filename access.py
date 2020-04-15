@@ -23,16 +23,25 @@ with open(args.files_file, 'w'): pass
 
 # open logging
 logger = LoggingHandler(log_file=args.log_file, echo=True)
-logger.log("Hello")
+logger.log("Hello.")
 
 # get commands from test file
 with open(args.test_file, 'r') as f:
     commandList = f.readlines()
 
+# ensure first command creates root user
+try:
+    assert commandList[0].split(" ")[0:2] == [CommandHandler.Keywords.ADD_USER.value, 'root']
+except AssertionError:
+    print("Fatal: first command must create root user.")
+    exit()
+
 # process commands
 for command in commandList:
     command = command.strip()
+    logger.log(command)
     try:
-        CommandHandler.execute(command)
+        msg = CommandHandler.execute(command)
+        logger.log(msg)
     except NoSuchCommandError:
         print("Can't execute '{}' - not yet implemented!".format(command))

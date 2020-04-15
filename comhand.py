@@ -34,6 +34,7 @@ class CommandHandler:
         """
         This is the only function designed to be called externally. It serves purely as an entrypoint for this class.
         command:    instruction string to be executed.
+        return:     string response message to be logged.
         """
         return CommandHandler._route_(command)
 
