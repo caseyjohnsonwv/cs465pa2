@@ -4,8 +4,8 @@ Casey Johnson, Spring 2020
 """
 
 from log import LoggingHandler
+from comhand import CommandHandler
 from argparse import ArgumentParser
-
 
 # parse command line arguments
 parser = ArgumentParser(description="CS 465 Programming Assignment 2 - Access Control")
@@ -23,4 +23,4 @@ with open(parser.test_file, 'r') as f:
 
 # process commands
 for command in commandList:
-    tokens = command.split(" ")
+    CommandHandler.execute(command)
