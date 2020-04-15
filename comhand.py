@@ -5,6 +5,9 @@ Casey Johnson, Spring 2020
 
 from enum import Enum
 
+class CommandHandlerError(Exception): pass
+class NoSuchCommandError(CommandHandlerError): pass
+
 class CommandHandler:
 
     class Keywords(Enum):
@@ -45,7 +48,12 @@ class CommandHandler:
             if isinstance(item, CommandHandler.Keywords) and command == item.value:
                 route = ''.join(['_',name.lower(),'_'])
                 break
+        # if command isn't recognized, throw an error
+        if not route:
+            raise NoSuchCommandError()
         # route command to its matching function - O(n) is probably best case here
         for name,func in CommandHandler.__dict__.items():
             if callable(func) and name.lower() == route.lower():
-                func(*args)
+                return func(*args)
+        # if command hasn't been implemented yet, throw an error
+        raise NoSuchCommandError()
