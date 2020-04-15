@@ -37,11 +37,14 @@ except AssertionError:
     exit()
 
 # process commands
+comhand = CommandHandler(args.accounts_file, args.files_file, args.groups_file)
 for command in commandList:
     command = command.strip()
-    logger.log(command)
+    logger.log('>> ' + command)
     try:
-        msg = CommandHandler.execute(command)
-        logger.log(msg)
+        resp = comhand.execute(command)
+        logger.log(resp)
     except NoSuchCommandError:
         print("Can't execute '{}' - not yet implemented!".format(command))
+    except NoMessageProvidedError:
+        print("")

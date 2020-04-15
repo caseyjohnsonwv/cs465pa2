@@ -3,6 +3,9 @@ This file contains a handler for standardized logging.
 Casey Johnson, Spring 2020
 """
 
+class LoggingError(Exception): pass
+class NoMessageProvidedError(Exception): pass
+
 class LoggingHandler:
     def __init__(self, log_file, echo=False):
         """
@@ -17,6 +20,8 @@ class LoggingHandler:
         """
         text:       string data to be logged.
         """
+        if not text:
+            raise NoMessageProvidedError()
         with open(self.log_file, 'a') as f:
             f.write(text)
             f.write('\n')
