@@ -169,4 +169,5 @@ root writing in file2.txt
 This test case is designed to ensure the first command creates users `root`. When this command doesn't create `root` immediately, the program is terminated.
 
 
-## Acknowledgements
+## Contact
+If needed, I am available by phone at `(304)279-9667` or by email at `ctj0001@mix.wvu.edu`.
