@@ -113,7 +113,7 @@ class File:
     def get_group(self):
         return self.group
 
-    def set_permissions(self, owner=None, group=None, others=None):
+    def set_permissions(self, owner='---', group='---', others='---'):
         if owner:
             self.perms['owner'] = owner
         if group:
