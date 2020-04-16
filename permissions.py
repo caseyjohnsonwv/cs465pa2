@@ -17,16 +17,29 @@ class Permissions:
             perm[2] = 'x'
         return ''.join(perm)
 
-    def to_json(perm):
-        perm = {'read':False, 'write':False, 'execute':False}
-        if 'r' in perm:
-            perm['read'] = True
-        if 'w' in perm:
-            perm['write'] = True
-        if 'x' in perm:
-            perm['execute'] = True
-        return perm
+    def is_read_enabled(permString):
+        return 'r' in permString
+    def is_write_enabled(permString):
+        return 'w' in permString
+    def is_execute_enabled(permString):
+        return 'x' in permString
 
+    def to_json(file_perms):
+        j = {
+            'r':{key:Permissions.is_read_enabled(file_perms[key]) for key in file_perms.keys()},
+            'w':{key:Permissions.is_write_enabled(file_perms[key]) for key in file_perms.keys()},
+            'x':{key:Permissions.is_execute_enabled(file_perms[key]) for key in file_perms.keys()},
+            }
+        return j
+
+    def grant_access(user, file, action):
+        perms = Permissions.to_json(file.get_permissions())
+        test1 = file.get_owner() == user and perms[action]['owner']
+        test2 = file.get_group() in user.get_groups() and perms[action]['group']
+        test3 = perms[action]['others']
+        if any([test1, test2, test3]):
+            return True
+        return False
 
 
 class User:
@@ -77,7 +90,7 @@ class File:
     """
     RESERVED_NAMES = {'accounts.txt', 'audit.txt', 'files.txt', 'groups.txt'}
 
-    def __init__(self, name, owner, owner_perm='rw-', group_perm=None, others_perm=None, group='nil'):
+    def __init__(self, name, owner, owner_perm='rw-', group_perm='---', others_perm='---', group='nil'):
         self.name = name
         with open(self.name, 'w'): pass
         self.owner = owner
@@ -85,7 +98,7 @@ class File:
         self.perms = {'owner':owner_perm, 'group':group_perm, 'others':others_perm}
 
     def __repr__(self):
-        msg = [self.name+":", self.owner, self.group.name]
+        msg = [self.name+":", self.owner.name, self.group.name]
         for val in self.perms.values():
             msg.append(val)
         return ' '.join(msg)
@@ -97,7 +110,7 @@ class File:
 
     def set_group(self, group_name):
         self.group = group_name
-    def get_group():
+    def get_group(self):
         return self.group
 
     def set_permissions(self, owner=None, group=None, others=None):
@@ -109,3 +122,7 @@ class File:
             self.perms['others'] = others
     def get_permissions(self):
         return self.perms
+
+    def write(self, text):
+        with open(self.name, 'a') as f:
+            f.write(text + '\n')
