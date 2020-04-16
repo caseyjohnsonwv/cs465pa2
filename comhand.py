@@ -83,8 +83,8 @@ class CommandHandler:
     def _add_group_(self, groupname):
         resp = "Denied: only root can create new groups."
         if self._has_root_access_():
-            if groupname == 'nil':
-                resp = "Failed: group name 'nil' not permitted."
+            if groupname in Group.RESERVED_NAMES:
+                resp = "Failed: group name '{}' not permitted.".format(groupname)
             elif self._get_group_by_name_(groupname):
                 resp = "Failed: group '{}' already exists.".format(groupname)
             else:
@@ -138,12 +138,14 @@ class CommandHandler:
         pass
 
     def _log_in_(self, username, password):
-        resp = "Failed: invalid username or password."
-        if self.logged_in:
-            resp = "Denied: simultaneous logins not permitted."
-        else:
+        resp = "Denied: simultaneous logins not permitted."
+        if not self.logged_in:
             user = self._get_user_by_name_(username)
-            if user:
+            if not user:
+                resp = "Failed: user '{}' not found.".format(username)
+            elif user.password != password:
+                resp = "Failed: invalid username or password."
+            else:
                 self.logged_in = user
                 resp = "User {} logged in.".format(user.username)
         return resp
@@ -156,10 +158,32 @@ class CommandHandler:
         return resp
 
     def _make_file_(self, filename):
-        pass
+        resp = "Denied: no user is logged in."
+        if self.logged_in:
+            if self._get_file_by_name_(filename):
+                resp = "Failed: file '{}' already exists.".format(filename)
+            elif filename in File.RESERVED_NAMES:
+                resp = "Failed: file name '{}' not permitted.".format(filename)
+            else:
+                file = File(name=filename, owner=self.logged_in)
+                self.files.add(file)
+                resp = "File '{}' with owner '{}' and default permissions created.".format(filename, self.logged_in.username)
+        return resp
 
     def _read_(self, filename):
         pass
 
     def _write_(self, filename, *text):
-        pass
+        resp = "Denied: user '{}' does not have write permission for '{}'.".format(self.logged_in, filename)
+        msg = ' '.join(text)
+        file = self._get_file_by_name_(filename)
+        if not self.logged_in:
+            resp = "Denied: no user is logged in."
+        elif not file:
+            resp = "Failed: file '{}' does not exist.".format(filename)
+        else:
+            user = self.logged_in
+            if Permissions.grant_access(user=user, file=file, action='w'):
+                file.write(msg)
+                resp = "Text written to '{}'.".format(filename)
+        return resp
