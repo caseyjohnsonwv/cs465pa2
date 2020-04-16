@@ -151,7 +151,7 @@ class CommandHandler:
             resp = "Failed: user {} does not exist.".format(username)
         elif self._has_root_access_():
             file.set_owner(user)
-            resp = "User {} made {} the owner of {}.".format(self.logged_in, user.username, file.name)
+            resp = "User {} made {} the owner of {}.".format(self.logged_in.username, user.username, file.name)
         return resp
 
     def _change_permissions_(self, filename, owner_perm, group_perm, others_perm):
@@ -163,7 +163,7 @@ class CommandHandler:
             resp = "Failed: file {} does not exist.".format(filename)
         elif self._has_root_access_() or (self.logged_in and file.owner == self.logged_in):
             file.set_permissions(owner=owner_perm, group=group_perm, others=others_perm)
-            resp = "User {} changed permissions for {} to '{}{}{}'.".format(self.logged_in, file.name, owner_perm, group_perm, others_perm)
+            resp = "User {} changed permissions for {} to {} {} {}.".format(self.logged_in.username, file.name, owner_perm, group_perm, others_perm)
         return resp
 
     def _details_(self, filename):
@@ -192,7 +192,7 @@ class CommandHandler:
         elif Permissions.grant_access(user=self.logged_in, file=file, action='x'):
             resp = "Executed {} successfully.".format(file.name)
         else:
-            resp = "Denied: {} cannot execute {}.".format(self.logged_in, file.name)
+            resp = "Denied: {} cannot execute {}.".format(self.logged_in.username, file.name)
         return resp
 
     def _log_in_(self, username, password):
@@ -242,7 +242,7 @@ class CommandHandler:
                 msg = file.read()
                 resp = "{}:\n{}.".format(file.name, msg) if msg else "{}:".format(file.name)
             else:
-                resp = "Denied: user {} does not have read permission for {}.".format(self.logged_in, filename)
+                resp = "Denied: user {} does not have read permission for {}.".format(self.logged_in.username, filename)
         return resp
 
     def _write_(self, filename, *text):
@@ -260,5 +260,5 @@ class CommandHandler:
                 file.write(msg)
                 resp = "Text written to {}.".format(filename)
             else:
-                resp = "Denied: user {} does not have write permission for {}.".format(self.logged_in, filename)
+                resp = "Denied: user {} does not have write permission for {}.".format(self.logged_in.username, filename)
         return resp
