@@ -85,7 +85,7 @@ class File:
         self.perms = {'owner':owner_perm, 'group':group_perm, 'others':others_perm}
 
     def __repr__(self):
-        msg = [self.name+":", self.owner, self.group]
+        msg = [self.name+":", self.owner, self.group.name]
         for val in self.perms.values():
             msg.append(val)
         return ' '.join(msg)
