@@ -4,6 +4,7 @@ Casey Johnson, Spring 2020
 """
 
 from permissions import *
+from structures import *
 from enum import Enum
 
 class CommandHandler:
