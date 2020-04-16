@@ -1,0 +1,33 @@
+useradd root admin
+useradd admin secretadminpassword
+mkfile file1.txt
+login root badlogin
+login root admin
+mkfile file1.txt
+chmod file1.txt rw- rw- r--
+groupadd editors
+useradd charlie secretcharliepassword
+logout
+login charlie secretcharliepassword
+read file1.txt
+write file1.txt random text from charlie
+logout
+login root admin
+usergrp charlie editors
+logout
+login charlie secretcharliepassword
+write file1.txt random text from charlie
+chgrp file1.txt editors
+logout
+login root admin
+chgrp file1.txt editors
+useradd ruth secretruthpassword
+logout
+login charlie secretcharliepassword
+write file1.txt random text from charlie
+logout
+login ruth secretruthpassword
+read file1.txt
+write file1.txt random text from ruth
+logout
+end
