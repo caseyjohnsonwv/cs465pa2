@@ -28,6 +28,7 @@ class Permissions:
         return perm
 
 
+
 class User:
     """
     Class for easily manipulating user data in memory.
@@ -35,15 +36,25 @@ class User:
     def __init__(self, username, password):
         self.username = username
         self.password = password
+        self.groups = set()
 
     def __repr__(self):
         return ''.join([self.username, ': ', self.password])
+
+    def add_to_group(self, group):
+        self.groups.add(group)
+    def remove_from_group(self, group):
+        self.groups.remove(group)
+    def get_groups(self):
+        return self.groups
 
 
 class Group:
     """
     Class for easily manipulating group data in memory.
     """
+    RESERVED_NAMES = {'nil'}
+
     def __init__(self, name):
         self.name = name
         self.members = set()
@@ -54,14 +65,18 @@ class Group:
             msg.append(member)
         return ' '.join(msg)
 
-    def add_member(self, username):
-        self.members.add(username)
+    def add_member(self, user):
+        self.members.add(user)
+    def get_members(self):
+        return self.members
 
 
 class File:
     """
     Class for easily manipulating file data in memory.
     """
+    RESERVED_NAMES = {'accounts.txt', 'audit.txt', 'files.txt', 'groups.txt'}
+
     def __init__(self, name, owner, owner_perm='rw-', group_perm=None, others_perm=None, group='nil'):
         self.name = name
         with open(self.name, 'w'): pass
@@ -75,22 +90,22 @@ class File:
             msg.append(val)
         return ' '.join(msg)
 
-    def set_owner(owner):
+    def set_owner(self, owner):
         self.owner = owner
-    def get_owner():
+    def get_owner(self):
         return self.owner
 
-    def set_group(group_name):
+    def set_group(self, group_name):
         self.group = group_name
     def get_group():
         return self.group
 
-    def set_permissions(owner=None, group=None, others=None):
+    def set_permissions(self, owner=None, group=None, others=None):
         if owner:
             self.perms['owner'] = owner
         if group:
             self.perms['group'] = group
         if others:
             self.perms['others'] = others
-    def get_permissions():
+    def get_permissions(self):
         return self.perms
