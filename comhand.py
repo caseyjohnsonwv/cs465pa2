@@ -64,23 +64,60 @@ class CommandHandler:
                 return func(self, *args)
         return "Command '{}' not found.".format(command)
 
+    def _has_root_access_(self):
+        return self.logged_in and self.logged_in.username == 'root'
+
+    def _get_user_by_name_(self, username):
+        for user in self.users:
+            if user.username == username:
+                return user
+    def _get_group_by_name_(self, groupname):
+        for group in self.groups:
+            if group.name == groupname:
+                return group
+    def _get_file_by_name_(self, filename):
+        for file in self.files:
+            if file.name == filename:
+                return file
+
     def _add_group_(self, groupname):
-        pass
+        resp = "Denied: only root can create new groups."
+        if self._has_root_access_():
+            if groupname == 'nil':
+                resp = "Failed: group name 'nil' not permitted."
+            elif self._get_group_by_name_(groupname):
+                resp = "Failed: group '{}' already exists.".format(groupname)
+            else:
+                group = Group(name=groupname)
+                self.groups.add(group)
+                resp = "Group '{}' created.".format(group.name)
+        return resp
 
     def _add_user_(self, username, password):
-        resp = None
-        if (len(self.users) == 0 and username == 'root') or self.logged_in == 'root':
-            user = User(username=username, password=password)
-            with open(self.accounts_file, 'a') as f:
-                f.write(str(user))
-            self.logged_in = user
-            resp = "User '{}' created.".format(username)
-        else:
-            resp = "Access denied - only root can create new users!"
+        resp = "Denied: only root can create new users."
+        if (len(self.users) == 0 and username == 'root') or self._has_root_access_():
+            if self._get_user_by_name_(username):
+                resp = "Failed: user '{}' already exists.".format(username)
+            else:
+                user = User(username=username, password=password)
+                with open(self.accounts_file, 'a') as f:
+                    f.write(str(user)+'\n')
+                self.users.add(user)
+                resp = "User '{}' created.".format(username)
         return resp
 
     def _add_user_to_group_(self, username, groupname):
-        pass
+        resp = "Denied: only root can change user groups."
+        user = self._get_user_by_name_(username)
+        group = self._get_group_by_name_(groupname)
+        if not user:
+            resp = "Failed: user '{}' does not exist.".format(username)
+        elif not group:
+            resp = "Failed: group '{}' does not exist.".format(groupname)
+        elif self._has_root_access_():
+            group.add_member(user)
+            resp = "User '{}' added to '{}'.".format(user.username, group.name)
+        return resp
 
     def _change_group_(self, filename, groupname):
         pass
@@ -101,10 +138,22 @@ class CommandHandler:
         pass
 
     def _log_in_(self, username, password):
-        pass
+        resp = "Failed: invalid username or password."
+        if self.logged_in:
+            resp = "Denied: simultaneous logins not permitted."
+        else:
+            user = self._get_user_by_name_(username)
+            if user:
+                self.logged_in = user
+                resp = "User {} logged in.".format(user.username)
+        return resp
 
     def _log_out_(self):
-        pass
+        resp = "Failed: no user is logged in."
+        if self.logged_in:
+            resp = "User '{}' logged out.".format(self.logged_in.username)
+            self.logged_in = None
+        return resp
 
     def _make_file_(self, filename):
         pass
