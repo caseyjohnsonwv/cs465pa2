@@ -128,7 +128,11 @@ class CommandHandler:
             resp = "Failed: file {} does not exist.".format(filename)
         elif filename in File.RESERVED_NAMES:
             resp = "Failed: file name {} not permitted.".format(filename)
-        elif self._has_root_access_() or (self.logged_in and file.owner == self.logged_in):
+        elif self._has_root_access_():
+            group = self._get_group_by_name_(groupname)
+            file.set_group(group)
+            resp = "User {} added {} to group {}.".format(self.logged_in.username, file.name, group.name)
+        elif self.logged_in and file.owner == self.logged_in:
             for group in self.logged_in.get_groups():
                 if groupname == group.name:
                     file.set_group(group)
