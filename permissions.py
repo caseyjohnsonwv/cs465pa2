@@ -75,13 +75,15 @@ class Group:
     def __repr__(self):
         msg = [self.name+':']
         for member in self.members:
-            msg.append(member)
+            msg.append(member.username)
         return ' '.join(msg)
 
     def add_member(self, user):
         self.members.add(user)
     def get_members(self):
         return self.members
+
+NILGROUP = Group(name='nil')
 
 
 class File:
@@ -90,7 +92,7 @@ class File:
     """
     RESERVED_NAMES = {'accounts.txt', 'audit.txt', 'files.txt', 'groups.txt'}
 
-    def __init__(self, name, owner, owner_perm='rw-', group_perm='---', others_perm='---', group='nil'):
+    def __init__(self, name, owner, owner_perm='rw-', group_perm='---', others_perm='---', group=NILGROUP):
         self.name = name
         with open(self.name, 'w'): pass
         self.owner = owner
@@ -98,7 +100,7 @@ class File:
         self.perms = {'owner':owner_perm, 'group':group_perm, 'others':others_perm}
 
     def __repr__(self):
-        msg = [self.name+":", self.owner.name, self.group.name]
+        msg = [self.name+":", self.owner.username, self.group.name]
         for val in self.perms.values():
             msg.append(val)
         return ' '.join(msg)
@@ -108,8 +110,8 @@ class File:
     def get_owner(self):
         return self.owner
 
-    def set_group(self, group_name):
-        self.group = group_name
+    def set_group(self, group):
+        self.group = group
     def get_group(self):
         return self.group
 
@@ -126,3 +128,6 @@ class File:
     def write(self, text):
         with open(self.name, 'a') as f:
             f.write(text + '\n')
+    def read(self):
+        with open(self.name, 'r') as f:
+            return f.read().strip()
