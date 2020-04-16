@@ -121,10 +121,10 @@ class CommandHandler:
     def _change_group_(self, filename, groupname):
         resp = "Denied: files can only be moved to groups to which the user belongs."
         file = self._get_file_by_name_(filename)
-        if not file:
+        if filename in File.RESERVED_NAMES:
+            resp = "Failed: changing group of {} not permitted.".format(filename)
+        elif not file:
             resp = "Failed: file {} does not exist.".format(filename)
-        elif filename in File.RESERVED_NAMES:
-            resp = "Failed: file name {} not permitted.".format(filename)
         elif self._has_root_access_():
             group = self._get_group_by_name_(groupname)
             file.set_group(group)
@@ -143,10 +143,10 @@ class CommandHandler:
         resp = "Denied: only root can change file owners."
         file = self._get_file_by_name_(filename)
         user = self._get_user_by_name_(username)
-        if not file:
+        if filename in File.RESERVED_NAMES:
+            resp = "Failed: changing owner of {} not permitted.".format(filename)
+        elif not file:
             resp = "Failed: file {} does not exist.".format(filename)
-        elif filename in File.RESERVED_NAMES:
-            resp = "Failed: file name {} not permitted.".format(filename)
         elif not user:
             resp = "Failed: user {} does not exist.".format(username)
         elif self._has_root_access_():
@@ -157,10 +157,10 @@ class CommandHandler:
     def _change_permissions_(self, filename, owner_perm, group_perm, others_perm):
         resp = "Denied: only file owners and root can change file permissions."
         file = self._get_file_by_name_(filename)
-        if not file:
+        if filename in File.RESERVED_NAMES:
+            resp = "Failed: changing permissions of {} not permitted.".format(filename)
+        elif not file:
             resp = "Failed: file {} does not exist.".format(filename)
-        elif filename in File.RESERVED_NAMES:
-            resp = "Failed: file name {} not permitted.".format(filename)
         elif self._has_root_access_() or (self.logged_in and file.owner == self.logged_in):
             file.set_permissions(owner=owner_perm, group=group_perm, others=others_perm)
             resp = "User {} changed permissions for {} to '{}{}{}'.".format(self.logged_in, file.name, owner_perm, group_perm, others_perm)
@@ -168,7 +168,7 @@ class CommandHandler:
 
     def _details_(self, filename):
         if filename in File.RESERVED_NAMES:
-            resp = "Failed: file name {} not permitted.".format(filename)
+            resp = "Failed: details on {} not permitted.".format(filename)
         file = self._get_file_by_name_(filename)
         resp = str(file) if file else "Failed: file {} does not exist.".format(filename)
         return resp
@@ -188,7 +188,7 @@ class CommandHandler:
         if not self.logged_in:
             resp = "Denied: no user is logged in."
         elif filename in File.RESERVED_NAMES:
-            resp = "Failed: file name {} not permitted.".format(filename)
+            resp = "Failed: execution of {} not permitted.".format(filename)
         elif Permissions.grant_access(user=self.logged_in, file=file, action='x'):
             resp = "Executed {} successfully.".format(file.name)
         else:
@@ -218,10 +218,10 @@ class CommandHandler:
     def _make_file_(self, filename):
         resp = "Denied: no user is logged in."
         if self.logged_in:
-            if self._get_file_by_name_(filename):
-                resp = "Failed: file {} already exists.".format(filename)
-            elif filename in File.RESERVED_NAMES:
+            if filename in File.RESERVED_NAMES:
                 resp = "Failed: file name {} not permitted.".format(filename)
+            elif self._get_file_by_name_(filename):
+                resp = "Failed: file {} already exists.".format(filename)
             else:
                 file = File(name=filename, owner=self.logged_in)
                 self.files.add(file)
@@ -232,10 +232,10 @@ class CommandHandler:
         file = self._get_file_by_name_(filename)
         if not self.logged_in:
             resp = "Denied: no user is logged in."
+        elif filename in File.RESERVED_NAMES:
+            resp = "Failed: reading from {} not permitted.".format(filename)
         elif not file:
             resp = "Failed: file {} does not exist.".format(filename)
-        elif filename in File.RESERVED_NAMES:
-            resp = "Failed: file name {} not permitted.".format(filename)
         else:
             user = self.logged_in
             if Permissions.grant_access(user=user, file=file, action='r'):
@@ -250,10 +250,10 @@ class CommandHandler:
         file = self._get_file_by_name_(filename)
         if not self.logged_in:
             resp = "Denied: no user is logged in."
+        elif filename in File.RESERVED_NAMES:
+            resp = "Failed: writing to {} not permitted.".format(filename)
         elif not file:
             resp = "Failed: file {} does not exist.".format(filename)
-        elif filename in File.RESERVED_NAMES:
-            resp = "Failed: file name {} not permitted.".format(filename)
         else:
             user = self.logged_in
             if Permissions.grant_access(user=user, file=file, action='w'):
