@@ -1,0 +1,38 @@
+useradd root admin
+login root admin
+useradd jimbo coalbaron69
+useradd chad fratboy420
+groupadd pike
+usergrp chad pike
+groupadd businessmajors
+usergrp chad businessmajors
+mkfile accounts.txt
+mkfile audit.txt
+mkfile files.txt
+mkfile groups.txt
+chmod accounts.txt rwx rwx rwx
+chgrp accounts.txt pike
+mkfile file1.txt
+mkfile file1.txt
+write file1.txt root writing in file1.txt
+chgrp file1.txt pike
+chmod file1.txt rwx r-x r--
+mkfile file2.txt
+write file2.txt root writing in file2.txt
+chmod file2.txt --- --- ---
+read file2.txt
+chgrp file2.txt businessmajors
+logout
+login chad fratboy420
+execute file1.txt
+execute file2.txt
+logout
+login jimbo coalbaron69
+read file1.txt
+execute file1.txt
+read file2.txt
+logout
+login root admin
+chmod file2.txt rw- --- ---
+logout
+end
