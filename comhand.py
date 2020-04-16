@@ -3,10 +3,8 @@ This file contains a handler for all of the implemented commands.
 Casey Johnson, Spring 2020
 """
 
+from permissions import *
 from enum import Enum
-
-class CommandHandlerError(Exception): pass
-class NoSuchCommandError(CommandHandlerError): pass
 
 class CommandHandler:
 
@@ -14,6 +12,10 @@ class CommandHandler:
         self.accounts_file = accounts_file
         self.files_file = files_file
         self.groups_file = groups_file
+        self.users = set()
+        self.groups = set()
+        self.files = set()
+        self.logged_in = None
 
     class Keywords(Enum):
         """
@@ -60,14 +62,22 @@ class CommandHandler:
         for name,func in CommandHandler.__dict__.items():
             if callable(func) and name.lower() == route.lower():
                 return func(self, *args)
-        # if command hasn't been implemented yet, throw an error
-        raise NoSuchCommandError()
+        return "Command '{}' not found.".format(command)
 
     def _add_group_(self, groupname):
         pass
 
     def _add_user_(self, username, password):
-        pass
+        resp = None
+        if (len(self.users) == 0 and username == 'root') or self.logged_in == 'root':
+            user = User(username=username, password=password)
+            with open(self.accounts_file, 'a') as f:
+                f.write(str(user))
+            self.logged_in = user
+            resp = "User '{}' created.".format(username)
+        else:
+            resp = "Access denied - only root can create new users!"
+        return resp
 
     def _add_user_to_group_(self, username, groupname):
         pass
