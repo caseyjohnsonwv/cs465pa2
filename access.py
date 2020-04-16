@@ -41,10 +41,5 @@ comhand = CommandHandler(args.accounts_file, args.files_file, args.groups_file)
 for command in commandList:
     command = command.strip()
     logger.log('>> ' + command)
-    try:
-        resp = comhand.execute(command)
-        logger.log(resp)
-    except NoSuchCommandError:
-        print("Can't execute '{}' - not yet implemented!".format(command))
-    except NoMessageProvidedError:
-        print("")
+    resp = comhand.execute(command)
+    logger.log(resp)

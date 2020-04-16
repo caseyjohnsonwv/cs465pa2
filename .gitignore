@@ -2,5 +2,7 @@ __pycache__
 
 accounts.txt
 audit.txt
-files.txt
 groups.txt
+
+file*.txt
+script*
