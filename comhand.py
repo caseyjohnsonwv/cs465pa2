@@ -126,6 +126,8 @@ class CommandHandler:
         file = self._get_file_by_name_(filename)
         if not file:
             resp = "Failed: file {} does not exist.".format(filename)
+        elif filename in File.RESERVED_NAMES:
+            resp = "Failed: file name {} not permitted.".format(filename)
         elif self._has_root_access_() or (self.logged_in and file.owner == self.logged_in):
             for group in self.logged_in.get_groups():
                 if groupname == group.name:
@@ -142,6 +144,8 @@ class CommandHandler:
         user = self._get_user_by_name_(username)
         if not file:
             resp = "Failed: file {} does not exist.".format(filename)
+        elif filename in File.RESERVED_NAMES:
+            resp = "Failed: file name {} not permitted.".format(filename)
         elif not user:
             resp = "Failed: user {} does not exist.".format(username)
         elif self._has_root_access_():
@@ -154,12 +158,16 @@ class CommandHandler:
         file = self._get_file_by_name_(filename)
         if not file:
             resp = "Failed: file {} does not exist.".format(filename)
+        elif filename in File.RESERVED_NAMES:
+            resp = "Failed: file name {} not permitted.".format(filename)
         elif self._has_root_access_() or (self.logged_in and file.owner == self.logged_in):
             file.set_permissions(owner=owner_perm, group=group_perm, others=others_perm)
             resp = "User {} changed permissions for {} to '{}{}{}'.".format(self.logged_in, file.name, owner_perm, group_perm, others_perm)
         return resp
 
     def _details_(self, filename):
+        if filename in File.RESERVED_NAMES:
+            resp = "Failed: file name {} not permitted.".format(filename)
         file = self._get_file_by_name_(filename)
         resp = str(file) if file else "Failed: file {} does not exist.".format(filename)
         return resp
@@ -171,12 +179,15 @@ class CommandHandler:
         with open(self.groups_file,'w') as f:
             for group in self.groups:
                 f.write(str(group)+'\n')
-        return "File and group data saved."
+        print("File and group data saved. Goodbye.")
+        exit()
 
     def _execute_(self, filename):
         file = self._get_file_by_name_(filename)
         if not self.logged_in:
             resp = "Denied: no user is logged in."
+        elif filename in File.RESERVED_NAMES:
+            resp = "Failed: file name {} not permitted.".format(filename)
         elif Permissions.grant_access(user=self.logged_in, file=file, action='x'):
             resp = "Executed {} successfully.".format(file.name)
         else:
@@ -222,6 +233,8 @@ class CommandHandler:
             resp = "Denied: no user is logged in."
         elif not file:
             resp = "Failed: file {} does not exist.".format(filename)
+        elif filename in File.RESERVED_NAMES:
+            resp = "Failed: file name {} not permitted.".format(filename)
         else:
             user = self.logged_in
             if Permissions.grant_access(user=user, file=file, action='r'):
@@ -238,6 +251,8 @@ class CommandHandler:
             resp = "Denied: no user is logged in."
         elif not file:
             resp = "Failed: file {} does not exist.".format(filename)
+        elif filename in File.RESERVED_NAMES:
+            resp = "Failed: file name {} not permitted.".format(filename)
         else:
             user = self.logged_in
             if Permissions.grant_access(user=user, file=file, action='w'):
