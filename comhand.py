@@ -239,7 +239,7 @@ class CommandHandler:
             user = self.logged_in
             if Permissions.grant_access(user=user, file=file, action='r'):
                 msg = file.read()
-                resp = "{}:\n{}.".format(file.name, msg)
+                resp = "{}:\n{}.".format(file.name, msg) if msg else "{}:".format(file.name)
             else:
                 resp = "Denied: user {} does not have read permission for {}.".format(self.logged_in, filename)
         return resp
