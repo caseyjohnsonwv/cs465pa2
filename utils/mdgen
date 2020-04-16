@@ -1,0 +1,18 @@
+#! /bin/sh
+
+ACCOUNTS="accounts.txt"
+FILES="files.txt"
+GROUPSFILE="groups.txt"
+
+MD_DELIM="\`\`\`"
+
+printf $MD_DELIM
+printf "\n$ACCOUNTS\n---\n"
+cat $ACCOUNTS
+printf $MD_DELIM"\n"$MD_DELIM
+printf "\n$FILES\n---\n"
+cat $FILES
+printf $MD_DELIM"\n"$MD_DELIM
+printf "\n$GROUPSFILE\n---\n"
+cat $GROUPSFILE
+printf $MD_DELIM

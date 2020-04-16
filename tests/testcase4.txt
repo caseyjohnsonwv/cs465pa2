@@ -21,18 +21,16 @@ mkfile file2.txt
 write file2.txt root writing in file2.txt
 chmod file2.txt --- --- ---
 read file2.txt
+chmod file2.txt r-x r-x r--
 chgrp file2.txt businessmajors
+chown file2.txt jimbo
 logout
 login chad fratboy420
 execute file1.txt
 execute file2.txt
 logout
 login jimbo coalbaron69
-read file1.txt
 execute file1.txt
-read file2.txt
-logout
-login root admin
-chmod file2.txt rw- --- ---
+execute file2.txt
 logout
 end
