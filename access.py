@@ -3,8 +3,8 @@ Main launchfile for Programming Assignment 2.
 Casey Johnson, Spring 2020
 """
 
-from log import *
-from comhand import *
+from src.log import *
+from src.comhand import *
 from argparse import ArgumentParser
 
 # parse command line arguments

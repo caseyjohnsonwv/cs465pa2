@@ -1,0 +1,40 @@
+#! /bin/sh
+
+ACCOUNTS="accounts.txt"
+FILES="files.txt"
+GROUPSFILE="groups.txt"
+FILE1="file1.txt"
+FILE2="file2.txt"
+SCRIPT="script"
+
+MD_DELIM="\`\`\`"
+
+printf $MD_DELIM
+printf "\n$ACCOUNTS\n---\n"
+cat $ACCOUNTS
+printf $MD_DELIM"\n"$MD_DELIM
+printf "\n$FILES\n---\n"
+cat $FILES
+printf $MD_DELIM"\n"$MD_DELIM
+printf "\n$GROUPSFILE\n---\n"
+cat $GROUPSFILE
+printf $MD_DELIM"\n"$MD_DELIM
+if [ -f $SCRIPT ]; then
+    printf "\n$SCRIPT\n---\n"
+    cat $SCRIPT
+    printf $MD_DELIM"\n"$MD_DELIM
+fi
+if [ -f $FILE1 ]; then
+    printf "\n$FILE1\n---\n"
+    cat $FILE1
+    printf $MD_DELIM"\n"$MD_DELIM
+fi
+if [ -f $FILE2 ]; then
+    printf "\n$FILE2\n---\n"
+    cat $FILE2
+    printf $MD_DELIM"\n"$MD_DELIM
+fi
+
+rm $FILE1 2>/dev/null
+rm $FILE2 2>/dev/null
+rm $SCRIPT 2>/dev/null
