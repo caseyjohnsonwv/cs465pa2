@@ -3,8 +3,8 @@ This file contains a handler for all of the implemented commands.
 Casey Johnson, Spring 2020
 """
 
-from permissions import *
-from structures import *
+from .permissions import *
+from .structures import *
 from enum import Enum
 
 class CommandHandler:
