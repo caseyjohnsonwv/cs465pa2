@@ -126,7 +126,14 @@ class CommandHandler:
         pass
 
     def _change_permissions_(self, filename, owner_perm, group_perm, others_perm):
-        pass
+        resp = "Denied: only file owners and root can change file permissions."
+        file = self._get_file_by_name_(filename)
+        if not file:
+            resp = "Failed: file '{}' does not exist.".format(filename)
+        elif self._has_root_access_() or (self.logged_in and file.owner == self.logged_in):
+            file.set_permissions(owner=owner_perm, group=group_perm, others=others_perm)
+            resp = "User '{}' changed permissions for '{}' to '{}{}{}'.".format(self.logged_in, file.name, owner_perm, group_perm, others_perm)
+        return resp
 
     def _details_(self, filename):
         pass
