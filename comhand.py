@@ -56,9 +56,6 @@ class CommandHandler:
             if isinstance(item, self.Keywords) and command == item.value:
                 route = ''.join(['_',name.lower(),'_'])
                 break
-        # if command isn't recognized, throw an error
-        if not route:
-            raise NoSuchCommandError()
         # route command to its matching function - O(n) is probably best case here
         for name,func in CommandHandler.__dict__.items():
             if callable(func) and name.lower() == route.lower():
